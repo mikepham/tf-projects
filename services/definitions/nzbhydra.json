@@ -1,7 +1,7 @@
 [
   {
     "name": "nzbhydra",
-    "image": "linuxserver/hydra2:latest",
+    "image": "nativecode/nzbhydra:latest",
     "cpu": 512,
     "memory": 1024,
     "essential": true,
@@ -37,6 +37,12 @@
       {
         "containerPort": 5076,
         "hostPort": 5076
+      }
+    ],
+    "secrets": [
+      {
+        "name": "${secret_name}",
+        "valueFrom": "${secret_arn}"
       }
     ]
   }

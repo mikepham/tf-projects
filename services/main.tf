@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket  = "nativecode"
     encrypt = true
-    key     = "nativecode.tfstate"
+    key     = "nativecode-services.tfstate"
     profile = "nativecode"
     region  = "us-east-1"
   }
@@ -13,17 +13,17 @@ provider "aws" {
 }
 
 module "domain" {
-  source = "./modules/aws/domain"
+  source = "../modules/aws/domain"
   domain = local.domain
 }
 
 module "env" {
-  source = "./modules/common/env"
+  source = "../modules/common/env"
   domain = local.domain
 }
 
 module "certificate" {
-  source           = "./modules/aws/certificate"
+  source           = "../modules/aws/certificate"
   domain           = module.env.domain_name
   cert_domain      = "*.${module.env.domain_name}"
   cert_domain_alts = [module.env.domain_name]
@@ -32,17 +32,24 @@ module "certificate" {
 }
 
 module "secrets" {
-  source       = "./modules/aws/secret"
+  source       = "../modules/aws/secret"
   domain       = module.env.domain_name
   project_name = local.project_name
   secret_name  = module.env.domain_slug
   secrets      = local.secrets
 }
 
+module "user" {
+  source       = "../modules/aws/user"
+  domain       = module.env.domain_name
+  group_name   = local.project_name
+  project_name = local.project_name
+  user_name    = local.project_name
+}
+
 module "loadbalancer" {
-  source                      = "./modules/aws/lb"
-  module_depends_on           = [module.cluster.cluster_id]
-  additional_certificate_arns = [module.root_certificate.certificate_id]
+  source                      = "../modules/aws/lb"
+  additional_certificate_arns = local.additional_certificate_arns
   certificate_arn             = module.certificate.certificate_id
   domain                      = module.env.domain_name
   project_name                = local.project_name
@@ -64,7 +71,7 @@ module "loadbalancer" {
 }
 
 module "vpc" {
-  source                         = "./modules/aws/vpc-network"
+  source                         = "../modules/aws/vpc-network"
   availability_zones             = local.availability_zones
   domain                         = module.env.domain_name
   project_name                   = local.project_name
@@ -75,13 +82,13 @@ module "vpc" {
 }
 
 module "cluster" {
-  source       = "./modules/aws/ecs-cluster"
+  source       = "../modules/aws/ecs-cluster"
   cluster_name = module.env.domain_slug
   project_name = local.project_name
 }
 
 module "media_services" {
-  source             = "./modules/aws/ecs-service"
+  source             = "../modules/aws/ecs-service"
   allowed_hosts      = local.allowed_hosts
   availability_zones = local.availability_zones
   cluster_id         = module.cluster.cluster_id
@@ -93,6 +100,7 @@ module "media_services" {
 
   containers = [
     {
+      cidr_blocks              = ["0.0.0.0/0"]
       cpu                      = 512
       definitions              = data.template_file.jackett.rendered
       desired_count            = 1
@@ -107,7 +115,7 @@ module "media_services" {
       port                     = 9117
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
-      security_groups          = [module.loadbalancer.security_group]
+      security_groups          = []
 
       volumes = [
         {
@@ -116,6 +124,7 @@ module "media_services" {
       ]
     },
     {
+      cidr_blocks              = ["0.0.0.0/0"]
       cpu                      = 512
       definitions              = data.template_file.nzbhydra.rendered
       desired_count            = 1
@@ -130,7 +139,7 @@ module "media_services" {
       port                     = 5076
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
-      security_groups          = [module.loadbalancer.security_group]
+      security_groups          = []
 
       volumes = [
         {
@@ -139,6 +148,7 @@ module "media_services" {
       ]
     },
     {
+      cidr_blocks              = ["0.0.0.0/0"]
       cpu                      = 512
       definitions              = data.template_file.phamflix.rendered
       desired_count            = 1
@@ -153,7 +163,7 @@ module "media_services" {
       port                     = 3579
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
-      security_groups          = [module.loadbalancer.security_group]
+      security_groups          = []
 
       volumes = [
         {
@@ -161,4 +171,12 @@ module "media_services" {
         }
       ]
   }]
+
+  policies = [
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+  ]
 }

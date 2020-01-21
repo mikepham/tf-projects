@@ -1,7 +1,3 @@
-locals {
-  default_vpc = "vpc-044a446333ccec851"
-}
-
 resource "aws_route53_record" "nativecode_net" {
   name    = module.env.domain_root
   type    = "A"
@@ -82,7 +78,7 @@ resource "aws_lb_target_group_attachment" "wordpress" {
 }
 
 module "root_certificate" {
-  source           = "./modules/aws/certificate"
+  source           = "../modules/aws/certificate"
   domain           = module.env.domain_root
   cert_domain      = "*.${module.env.domain_root}"
   cert_domain_alts = [module.env.domain_root]
@@ -91,7 +87,7 @@ module "root_certificate" {
 }
 
 module "website" {
-  source           = "./modules/aws/lb"
+  source           = "../modules/aws/lb"
   certificate_arn  = module.root_certificate.certificate_id
   domain           = module.env.domain_root
   project_name     = local.project_name

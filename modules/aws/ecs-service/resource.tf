@@ -75,7 +75,7 @@ resource "aws_security_group" "tasks" {
     for_each = var.containers
 
     content {
-      cidr_blocks     = lookup(container.value, "cidrs", [])
+      cidr_blocks     = lookup(container.value, "cidr_blocks", [])
       protocol        = lookup(container.value, "protocol", "tcp")
       from_port       = lookup(container.value, "from_port", lookup(container.value, "port", 0))
       to_port         = lookup(container.value, "to_port", lookup(container.value, "port", 0))
@@ -159,7 +159,7 @@ resource "aws_ecs_service" "ecs" {
   }
 
   lifecycle {
-    ignore_changes = [task_definition]
+    ignore_changes = [task_definition, desired_count]
   }
 
   load_balancer {

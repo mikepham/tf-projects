@@ -17,6 +17,7 @@ variable "containers" {
   description = "Container Services"
 
   type = list(object({
+    cidr_blocks              = list(string)
     cpu                      = number
     definitions              = string
     desired_count            = number

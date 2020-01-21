@@ -9,6 +9,11 @@ locals {
   vpc_cidr_public_block_subnets  = ["172.100.128.0/22", "172.100.132.0/22", "172.100.136.0/22"]
 
   secrets = {
-    "test" : "test"
+    "AWS_ACCESS_KEY_ID" : module.user.access_key
+    "AWS_SECRET_ACCESS_KEY" : module.user.secret_key
   }
+
+  additional_certificate_arns = [
+    "arn:aws:acm:us-east-1:329267330377:certificate/cd1e1129-84b9-4188-86af-9982c1ec489e"
+  ]
 }
