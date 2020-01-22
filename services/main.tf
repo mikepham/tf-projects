@@ -67,6 +67,18 @@ module "loadbalancer" {
       host_header      = ["phamflix.${module.env.domain_name}"]
       target_group_arn = module.media_services.target_group_arns[2]
     },
+    {
+      host_header      = ["jackett.${module.env.domain_root}"]
+      target_group_arn = module.media_services.target_group_arns[0]
+    },
+    {
+      host_header      = ["nzbhydra.${module.env.domain_root}"]
+      target_group_arn = module.media_services.target_group_arns[1]
+    },
+    {
+      host_header      = ["phamflix.${module.env.domain_root}"]
+      target_group_arn = module.media_services.target_group_arns[2]
+    },
   ]
 }
 
