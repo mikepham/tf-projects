@@ -13,17 +13,17 @@ provider "aws" {
 }
 
 module "domain" {
-  source = "../modules/aws/domain"
+  source = "../../modules/aws/domain"
   domain = local.domain
 }
 
 module "env" {
-  source = "../modules/common/env"
+  source = "../../modules/common/env"
   domain = local.domain
 }
 
 module "certificate" {
-  source           = "../modules/aws/certificate"
+  source           = "../../modules/aws/certificate"
   domain           = module.env.domain_name
   cert_domain      = "*.${module.env.domain_name}"
   cert_domain_alts = [module.env.domain_name]
@@ -32,7 +32,7 @@ module "certificate" {
 }
 
 module "secrets" {
-  source       = "../modules/aws/secret"
+  source       = "../../modules/aws/secret"
   domain       = module.env.domain_name
   project_name = local.project_name
   secret_name  = module.env.domain_slug
@@ -40,7 +40,7 @@ module "secrets" {
 }
 
 module "user" {
-  source       = "../modules/aws/user"
+  source       = "../../modules/aws/user"
   domain       = module.env.domain_name
   group_name   = local.project_name
   project_name = local.project_name
@@ -48,7 +48,7 @@ module "user" {
 }
 
 module "loadbalancer" {
-  source                      = "../modules/aws/lb"
+  source                      = "../../modules/aws/lb"
   additional_certificate_arns = local.additional_certificate_arns
   certificate_arn             = module.certificate.certificate_id
   domain                      = module.env.domain_name
@@ -83,7 +83,7 @@ module "loadbalancer" {
 }
 
 module "vpc" {
-  source                         = "../modules/aws/vpc-network"
+  source                         = "../../modules/aws/vpc-network"
   availability_zones             = local.availability_zones
   domain                         = module.env.domain_name
   project_name                   = local.project_name
@@ -94,13 +94,14 @@ module "vpc" {
 }
 
 module "cluster" {
-  source       = "../modules/aws/ecs-cluster"
-  cluster_name = module.env.domain_slug
-  project_name = local.project_name
+  source                    = "../../modules/aws/ecs-cluster"
+  cluster_name              = module.env.domain_slug
+  enable_container_insights = false
+  project_name              = local.project_name
 }
 
 module "media_services" {
-  source             = "../modules/aws/ecs-service"
+  source             = "../../modules/aws/ecs-service"
   allowed_hosts      = local.allowed_hosts
   availability_zones = local.availability_zones
   cluster_id         = module.cluster.cluster_id
