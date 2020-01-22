@@ -8,29 +8,15 @@
     "environment": [
       {
         "name": "PUID",
-        "value": "0"
+        "value": "1000"
       },
       {
         "name": "PGID",
-        "value": "0"
+        "value": "1000"
       },
       {
         "name": "TZ",
         "value": "America/New_York"
-      }
-    ],
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-group": "phamflix",
-        "awslogs-region": "us-east-1",
-        "awslogs-stream-prefix": "prod"
-      }
-    },
-    "mountPoints": [
-      {
-        "containerPath": "/config",
-        "sourceVolume": "phamflix"
       }
     ],
     "portMappings": [

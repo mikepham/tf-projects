@@ -64,6 +64,12 @@ variable "enable_ecs_managed_tags" {
   type        = bool
 }
 
+variable "enable_logging" {
+  default     = true
+  description = "Enable Container Logging"
+  type        = bool
+}
+
 variable "iam_role" {
   default     = null
   description = "IAM Role"

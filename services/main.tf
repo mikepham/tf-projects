@@ -128,12 +128,7 @@ module "media_services" {
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
       security_groups          = []
-
-      volumes = [
-        {
-          name = "jackett"
-        }
-      ]
+      volumes                  = []
     },
     {
       cidr_blocks              = ["0.0.0.0/0"]
@@ -152,12 +147,7 @@ module "media_services" {
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
       security_groups          = []
-
-      volumes = [
-        {
-          name = "nzbhydra"
-        }
-      ]
+      volumes                  = []
     },
     {
       cidr_blocks              = ["0.0.0.0/0"]
@@ -176,12 +166,7 @@ module "media_services" {
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
       security_groups          = []
-
-      volumes = [
-        {
-          name = "phamflix"
-        }
-      ]
+      volumes                  = []
   }]
 
   policies = [
