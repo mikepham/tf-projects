@@ -19,6 +19,14 @@
         "value": "America/New_York"
       }
     ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "phamflix",
+        "awslogs-region": "us-east-1",
+        "awslogs-stream-prefix": "prod"
+      }
+    },
     "portMappings": [
       {
         "containerPort": 3579,
