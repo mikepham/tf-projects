@@ -1,0 +1,43 @@
+[
+  {
+    "name": "jackett",
+    "image": "linuxserver/jackett:latest",
+    "cpu": 512,
+    "memory": 1024,
+    "essential": true,
+    "environment": [
+      {
+        "name": "PUID",
+        "value": "1000"
+      },
+      {
+        "name": "PGID",
+        "value": "1000"
+      },
+      {
+        "name": "TZ",
+        "value": "America/New_York"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "jackett",
+        "awslogs-region": "us-east-1",
+        "awslogs-stream-prefix": "prod"
+      }
+    },
+    "mountPoints": [
+      {
+        "containerPath": "/config",
+        "sourceVolume": "jackett"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": 9117,
+        "hostPort": 9117
+      }
+    ]
+  }
+]
