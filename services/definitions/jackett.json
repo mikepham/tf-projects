@@ -8,11 +8,11 @@
     "environment": [
       {
         "name": "PUID",
-        "value": "0"
+        "value": "1000"
       },
       {
         "name": "PGID",
-        "value": "0"
+        "value": "1000"
       },
       {
         "name": "TZ",
