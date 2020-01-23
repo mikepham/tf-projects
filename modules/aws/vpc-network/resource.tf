@@ -14,7 +14,7 @@ resource "aws_eip" "nat" {
   vpc = true
 
   tags = {
-    Name    = var.project_name
+    Name    = var.domain
     Project = var.project_name
   }
 }
@@ -24,7 +24,7 @@ resource "aws_nat_gateway" "nat" {
   subnet_id     = aws_subnet.private[0].id
 
   tags = {
-    Name    = var.project_name
+    Name    = var.domain
     Project = var.project_name
   }
 }
@@ -33,7 +33,7 @@ resource "aws_internet_gateway" "gateway" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name    = var.project_name
+    Name    = var.domain
     Project = var.project_name
   }
 }
@@ -76,8 +76,9 @@ resource "aws_db_subnet_group" "db_subnet_group" {
   }
 }
 
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.vpc.id
+
+resource "aws_default_route_table" "private" {
+  default_route_table_id = aws_vpc.vpc.default_route_table_id
 
   route {
     cidr_block     = "0.0.0.0/0"
@@ -107,11 +108,61 @@ resource "aws_route_table" "public" {
 resource "aws_route_table_association" "private_route_associations" {
   count          = length(aws_subnet.private)
   subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private.id
+  route_table_id = aws_default_route_table.private.id
 }
 
 resource "aws_route_table_association" "public_route_associations" {
   count          = length(aws_subnet.public)
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
+}
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.vpc.id
+
+  ingress {
+    protocol  = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name    = "default-${var.domain}"
+    Project = var.project_name
+  }
+}
+
+resource "aws_default_network_acl" "default" {
+  default_network_acl_id = aws_vpc.vpc.default_network_acl_id
+
+  ingress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  egress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  tags = {
+    Name    = "default-${var.domain}"
+    Project = var.project_name
+  }
 }

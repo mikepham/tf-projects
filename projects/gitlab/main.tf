@@ -22,7 +22,22 @@ module "env" {
   domain = local.domain
 }
 
+module "keypair" {
+  source       = "../../modules/aws/keypair"
+  bucket_name  = "nativecode"
+  domain       = local.domain
+  project_name = local.project_name
+}
+
+module "user" {
+  source       = "../../modules/aws/user"
+  domain       = module.env.domain_name
+  group_name   = local.project_name
+  project_name = local.project_name
+  user_name    = local.project_name
+}
+
 module "vpc" {
-  source       = "../../modules/aws/vpc"
-  vpc_id       = local.vpc_id
+  source = "../../modules/aws/vpc"
+  vpc_id = local.vpc_id
 }
