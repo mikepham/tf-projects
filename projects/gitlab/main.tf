@@ -23,6 +23,6 @@ module "env" {
 }
 
 module "vpc" {
-  source = "../../modules/aws/vpc"
-  domain = local.domain
+  source       = "../../modules/aws/vpc"
+  vpc_id       = local.vpc_id
 }

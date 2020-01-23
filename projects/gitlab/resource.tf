@@ -4,8 +4,8 @@ resource "aws_security_group" "gitlab" {
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name    = var.domain
-    Project = var.project_name
+    Name    = local.domain
+    Project = local.project_name
   }
 
   egress {
@@ -15,17 +15,11 @@ resource "aws_security_group" "gitlab" {
     to_port     = 0
   }
 
-  dynamic "ingress" {
-    iterator = container
-    for_each = var.containers
-
-    content {
-      cidr_blocks     = lookup(container.value, "cidr_blocks", [])
-      protocol        = lookup(container.value, "protocol", "tcp")
-      from_port       = lookup(container.value, "from_port", lookup(container.value, "port", 0))
-      to_port         = lookup(container.value, "to_port", lookup(container.value, "port", 0))
-      security_groups = lookup(container.value, "security_groups", var.security_group_ids)
-    }
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "tcp"
+    from_port   = 22
+    to_port     = 22
   }
 
   lifecycle {
@@ -36,7 +30,7 @@ resource "aws_security_group" "gitlab" {
 resource "aws_instance" "gitlab" {
   ami             = local.ami_gitlab
   instance_type   = "t2.medium"
-  security_groups = []
+  security_groups = [aws_security_group.gitlab.id]
 
   tags = {
     Name    = local.domain

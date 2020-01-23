@@ -11,7 +11,14 @@ output "subnets" {
   value = data.aws_subnet_ids.subnets.ids
 }
 
+output "private" {
+  value = data.aws_subnet_ids.private.ids
+}
+
+output "public" {
+  value = data.aws_subnet_ids.public.ids
+}
+
 output "vpc_id" {
   value = data.aws_vpc.vpc.id
 }
-

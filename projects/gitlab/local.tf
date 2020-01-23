@@ -4,4 +4,5 @@ locals {
   availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
   domain             = "nativecode.net"
   project_name       = "gitlab"
+  vpc_id             = "vpc-0f6025c1d1944919a"
 }
