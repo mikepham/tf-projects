@@ -76,7 +76,6 @@ resource "aws_db_subnet_group" "db_subnet_group" {
   }
 }
 
-
 resource "aws_default_route_table" "private" {
   default_route_table_id = aws_vpc.vpc.default_route_table_id
 
