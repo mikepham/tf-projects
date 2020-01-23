@@ -1,10 +1,6 @@
 [
   {
-    "name": "phamflix",
-    "image": "nativecode/ombi:latest",
     "cpu": 512,
-    "memory": 1024,
-    "essential": true,
     "environment": [
       {
         "name": "PUID",
@@ -19,18 +15,22 @@
         "value": "America/New_York"
       }
     ],
+    "essential": true,
+    "image": "nativecode/nzbhydra:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "phamflix",
+        "awslogs-group": "nzbhydra",
         "awslogs-region": "us-east-1",
         "awslogs-stream-prefix": "prod"
       }
     },
+    "memory": 1024,
+    "name": "nzbhydra",
     "portMappings": [
       {
-        "containerPort": 3579,
-        "hostPort": 3579
+        "containerPort": 5076,
+        "hostPort": 5076
       }
     ],
     "secrets": [

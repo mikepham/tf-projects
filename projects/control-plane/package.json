@@ -1,0 +1,20 @@
+{
+  "name": "control-plane",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikepham/tf-projects.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mikepham/tf-projects/issues"
+  },
+  "homepage": "https://github.com/mikepham/tf-projects#readme",
+  "author": "opensource@nativecode.com",
+  "keywords": [],
+  "scripts": {
+    "build": "terraform plan",
+    "prebuild": "terraform init"
+  },
+  "devDependencies": {}
+}

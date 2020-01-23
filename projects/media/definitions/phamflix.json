@@ -1,36 +1,36 @@
 [
   {
-    "name": "jackett",
-    "image": "nativecode/jackett:latest",
     "cpu": 512,
-    "memory": 1024,
-    "essential": true,
     "environment": [
       {
         "name": "PUID",
-        "value": "1000"
+        "value": "0"
       },
       {
         "name": "PGID",
-        "value": "1000"
+        "value": "0"
       },
       {
         "name": "TZ",
         "value": "America/New_York"
       }
     ],
+    "essential": true,
+    "image": "nativecode/ombi:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "jackett",
+        "awslogs-group": "phamflix",
         "awslogs-region": "us-east-1",
         "awslogs-stream-prefix": "prod"
       }
     },
+    "memory": 1024,
+    "name": "phamflix",
     "portMappings": [
       {
-        "containerPort": 9117,
-        "hostPort": 9117
+        "containerPort": 3579,
+        "hostPort": 3579
       }
     ],
     "secrets": [

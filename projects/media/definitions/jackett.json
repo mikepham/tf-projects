@@ -1,36 +1,36 @@
 [
   {
-    "name": "nzbhydra",
-    "image": "nativecode/nzbhydra:latest",
     "cpu": 512,
-    "memory": 1024,
-    "essential": true,
     "environment": [
       {
         "name": "PUID",
-        "value": "0"
+        "value": "1000"
       },
       {
         "name": "PGID",
-        "value": "0"
+        "value": "1000"
       },
       {
         "name": "TZ",
         "value": "America/New_York"
       }
     ],
+    "essential": true,
+    "image": "nativecode/jackett:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "nzbhydra",
+        "awslogs-group": "jackett",
         "awslogs-region": "us-east-1",
         "awslogs-stream-prefix": "prod"
       }
     },
+    "memory": 1024,
+    "name": "jackett",
     "portMappings": [
       {
-        "containerPort": 5076,
-        "hostPort": 5076
+        "containerPort": 9117,
+        "hostPort": 9117
       }
     ],
     "secrets": [

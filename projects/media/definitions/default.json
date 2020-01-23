@@ -1,10 +1,10 @@
 [
   {
-    "name": "default",
-    "image": "nginx:alpine",
     "cpu": 256,
-    "memory": 512,
     "essential": true,
+    "image": "nginx:alpine",
+    "memory": 512,
+    "name": "default",
     "portMappings": [
       {
         "containerPort": 80,
