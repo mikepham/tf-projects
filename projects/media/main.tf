@@ -55,10 +55,14 @@ module "loadbalancer" {
   project_name                = local.project_name
   security_groups             = module.media_services.security_groups
   subnets                     = module.vpc.public
-  target_group_arn            = module.media_services.target_group_arns[0]
+  target_group_arn            = module.media_services.target_group_arns[2]
   vpc_id                      = module.vpc.vpc_id
 
   rules = [
+    {
+      host_header      = ["jackett.${module.env.domain_name}"]
+      target_group_arn = module.media_services.target_group_arns[0]
+    },
     {
       host_header      = ["nzbhydra.${module.env.domain_name}"]
       target_group_arn = module.media_services.target_group_arns[1]
