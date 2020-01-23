@@ -1,9 +1,7 @@
 {
-  "name": "tf-projects",
+  "name": "control",
   "version": "0.0.0",
-  "description": "NativeCode Terraform Projects",
   "license": "UNLICENSED",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mikepham/tf-projects.git"
@@ -15,14 +13,9 @@
   "author": "opensource@nativecode.com",
   "keywords": [],
   "scripts": {
-    "apply": "lerna run apply",
-    "build": "lerna run build",
-    "prebuild": "jsonsort \"**/(definitions|files)/**/*.json\"",
-    "lerna": "lerna",
-    "postinstall": "lerna bootstrap"
+    "apply": "../terraform.sh apply",
+    "build": "../terraform.sh plan",
+    "terraform": "terraform"
   },
-  "devDependencies": {
-    "json-sort-cli": "^1.15.6",
-    "lerna": "^3.20.2"
-  }
+  "devDependencies": {}
 }

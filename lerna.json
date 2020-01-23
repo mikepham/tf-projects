@@ -1,4 +1,9 @@
 {
+  "commands": {
+    "run": {
+      "stream": true
+    }
+  },
   "packages": [
     "projects/*"
   ],

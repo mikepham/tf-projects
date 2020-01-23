@@ -2,7 +2,7 @@ locals {
   allowed_hosts                  = ["97.106.33.210/32"]
   availability_zones             = ["us-east-1a", "us-east-1b", "us-east-1c"]
   domain                         = "nativecode.net"
-  project_name                   = "services"
+  project_name                   = "media"
   vpc_nat_private_ip             = "172.100.0.10"
   vpc_cidr_block                 = "172.100.0.0/16"
   vpc_cidr_private_block_subnets = ["172.100.0.0/22", "172.100.4.0/22", "172.100.8.0/22"]

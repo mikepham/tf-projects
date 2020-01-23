@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket  = "nativecode"
     encrypt = true
-    key     = "nativecode-services-gitlab.tfstate"
+    key     = "nativecode-control.tfstate"
     profile = "nativecode"
     region  = "us-east-1"
   }
@@ -19,10 +19,5 @@ module "domain" {
 
 module "env" {
   source = "../../modules/common/env"
-  domain = local.domain
-}
-
-module "vpc" {
-  source = "../../modules/aws/vpc"
   domain = local.domain
 }

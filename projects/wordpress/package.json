@@ -1,5 +1,5 @@
 {
-  "name": "control-plane",
+  "name": "wordpress",
   "version": "0.0.0",
   "license": "UNLICENSED",
   "repository": {
@@ -13,8 +13,9 @@
   "author": "opensource@nativecode.com",
   "keywords": [],
   "scripts": {
-    "build": "terraform plan",
-    "prebuild": "terraform init"
+    "apply": "../terraform.sh apply",
+    "build": "../terraform.sh plan",
+    "terraform": "terraform"
   },
   "devDependencies": {}
 }

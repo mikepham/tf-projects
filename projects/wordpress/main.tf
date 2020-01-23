@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket  = "nativecode"
     encrypt = true
-    key     = "nativecode-control-plane.tfstate"
+    key     = "nativecode-services-wordpress.tfstate"
     profile = "nativecode"
     region  = "us-east-1"
   }
