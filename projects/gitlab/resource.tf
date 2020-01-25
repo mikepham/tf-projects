@@ -29,11 +29,11 @@ resource "aws_security_group" "gitlab" {
 
 resource "aws_instance" "gitlab" {
   ami                         = local.ami_gitlab
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   instance_type               = "t2.medium"
   key_name                    = module.keypair.key_name
   security_groups             = [aws_security_group.gitlab.id]
-  subnet_id                   = module.vpc.private[0].id
+  subnet_id                   = module.vpc.public[0].id
 
   tags = {
     Name    = local.domain

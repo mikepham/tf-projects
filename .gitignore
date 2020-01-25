@@ -1,3 +1,4 @@
+.output
 .terraform
 node_modules
 *.log

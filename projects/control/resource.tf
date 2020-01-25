@@ -77,18 +77,9 @@ resource "aws_lb_target_group_attachment" "wordpress" {
   port             = 80
 }
 
-module "root_certificate" {
-  source           = "../../modules/aws/certificate"
-  domain           = module.env.domain_root
-  cert_domain      = "*.${module.env.domain_root}"
-  cert_domain_alts = [module.env.domain_root]
-  project_name     = local.project_name
-  zone_id          = module.domain.zone_id
-}
-
 module "website" {
   source           = "../../modules/aws/lb"
-  certificate_arn  = module.root_certificate.certificate_id
+  certificate_arn  = module.certificate.certificate_id
   domain           = module.env.domain_root
   project_name     = local.project_name
   subnets          = ["subnet-061f64ab05defa527", "subnet-0a39e64f6b4f2d11f", "subnet-09972a4049f4674fc"]
