@@ -58,19 +58,7 @@ module "loadbalancer" {
   target_group_arn            = module.media_services.target_group_arns[2]
   vpc_id                      = module.vpc.vpc_id
 
-  rules = [
-    {
-      host_header      = ["jackett.${module.env.domain_name}"]
-      target_group_arn = module.media_services.target_group_arns[0]
-    },
-    {
-      host_header      = ["nzbhydra.${module.env.domain_name}"]
-      target_group_arn = module.media_services.target_group_arns[1]
-    },
-    {
-      host_header      = ["phamflix.${module.env.domain_name}"]
-      target_group_arn = module.media_services.target_group_arns[2]
-    },
+  rules = concat(module.media_services.rules, [
     {
       host_header      = ["jackett.${module.env.domain_root}"]
       target_group_arn = module.media_services.target_group_arns[0]
@@ -83,7 +71,7 @@ module "loadbalancer" {
       host_header      = ["phamflix.${module.env.domain_root}"]
       target_group_arn = module.media_services.target_group_arns[2]
     },
-  ]
+  ])
 }
 
 module "vpc" {
