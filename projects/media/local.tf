@@ -14,6 +14,6 @@ locals {
   }
 
   additional_certificate_arns = [
-    "arn:aws:acm:us-east-1:329267330377:certificate/cd1e1129-84b9-4188-86af-9982c1ec489e"
+    "arn:aws:acm:us-east-1:329267330377:certificate/15cb6eaa-4e61-44fb-b7b6-2bdb86b878d4"
   ]
 }
