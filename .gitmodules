@@ -1,0 +1,3 @@
+[submodule "modules"]
+	path = modules
+	url = git@bitbucket.org:plsos2/terraform-modules-aws.git
