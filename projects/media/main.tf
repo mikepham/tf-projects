@@ -40,6 +40,13 @@ module "secrets" {
   secrets      = local.secrets
 }
 
+module "keypair" {
+  source       = "../../modules/aws/keypair"
+  bucket_name  = module.private_bucket.id
+  domain       = module.env.domain_name
+  project_name = local.project_name
+}
+
 module "user" {
   source       = "../../modules/aws/user"
   domain       = module.env.domain_name
@@ -51,7 +58,7 @@ module "user" {
 module "private_bucket" {
   source        = "../../modules/aws/bucket"
   acl           = "private"
-  bucket_name   = "private.${module.env.domain_name}"
+  bucket_name   = local.private_bucket_name
   domain        = module.env.domain_name
   force_destroy = module.env.not_production
   project_name  = local.project_name
@@ -166,4 +173,38 @@ module "media_services" {
     "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
   ]
+}
+
+module "rds" {
+  source                     = "../../modules/aws/rds"
+  allowed_hosts              = local.allowed_hosts
+  auto_minor_version_upgrade = module.env.not_production
+  backup_retention_period    = module.env.is_production ? 1 : 3
+  backup_window              = "05:00-06:00"
+  bucket_arn                 = module.private_bucket.arn
+  database_identifier        = local.project_name
+  database_name              = local.project_name
+  db_subnet_group_name       = "db-subnet-group-${terraform.workspace}"
+  disk_size                  = 32
+  domain                     = module.env.domain_root
+  engine                     = "mysql"
+  engine_version             = "5.7.26"
+  enable_monitoring          = true
+  instance_class             = "db.t3.micro"
+  kms_key_id                 = null
+  maintenance_window         = "Sat:02:00-Sat:03:00"
+  multi_az                   = module.env.is_production
+  parameter_group            = "default.mysql5.7"
+  password                   = random_string.database_password.result
+  project_name               = local.project_name
+  publicly_accessible        = module.env.not_production
+  security_groups            = module.media_services.security_groups
+  skip_final_snapshot        = module.env.not_production
+  storage_encrypted          = module.env.is_production
+  vpc_id                     = module.vpc.vpc_id
+  vpc_security_group_ids     = []
+
+  # DANGER: Only set this value when there is a disaster. Setting this
+  # value *will* destroy and re-create from the specified snapshot.
+  snapshot_identifier = null
 }

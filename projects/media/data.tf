@@ -11,6 +11,7 @@ data "template_file" "nzbhydra" {
   template = file("definitions/nzbhydra.json")
 
   vars = {
+    bucket_name = local.private_bucket_name
     secret_name = "SECRETS"
     secret_arn  = module.secrets.arn
   }
@@ -20,6 +21,7 @@ data "template_file" "phamflix" {
   template = file("definitions/phamflix.json")
 
   vars = {
+    bucket_name = local.private_bucket_name
     secret_name = "SECRETS"
     secret_arn  = module.secrets.arn
   }
@@ -29,6 +31,7 @@ data "template_file" "jackett" {
   template = file("definitions/jackett.json")
 
   vars = {
+    bucket_name = local.private_bucket_name
     secret_name = "SECRETS"
     secret_arn  = module.secrets.arn
   }

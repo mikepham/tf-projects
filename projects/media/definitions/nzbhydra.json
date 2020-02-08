@@ -13,6 +13,10 @@
       {
         "name": "TZ",
         "value": "America/New_York"
+      },
+      {
+        "name": "BUCKET_NAME",
+        "value": "${bucket_name}"
       }
     ],
     "essential": true,
