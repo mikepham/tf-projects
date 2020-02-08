@@ -58,31 +58,12 @@ module "loadbalancer" {
   target_group_arn            = module.media_services.target_group_arns[2]
   vpc_id                      = module.vpc.vpc_id
 
-  rules = concat(module.media_services.rules, [
-    {
-      host_header      = ["jackett.${module.env.domain_root}"]
-      target_group_arn = module.media_services.target_group_arns[0]
-    },
-    {
-      host_header      = ["nzbhydra.${module.env.domain_root}"]
-      target_group_arn = module.media_services.target_group_arns[1]
-    },
-    {
-      host_header      = ["phamflix.${module.env.domain_root}"]
-      target_group_arn = module.media_services.target_group_arns[2]
-    },
-  ])
+  rules = module.media_services.rules
 }
 
 module "vpc" {
-  source                         = "../../modules/aws/vpc-network"
-  availability_zones             = local.availability_zones
-  domain                         = module.env.domain_name
-  project_name                   = local.project_name
-  vpc_nat_private_ip             = local.vpc_nat_private_ip
-  vpc_cidr_block                 = local.vpc_cidr_block
-  vpc_cidr_private_block_subnets = local.vpc_cidr_private_block_subnets
-  vpc_cidr_public_block_subnets  = local.vpc_cidr_public_block_subnets
+  source      = "../../modules/aws/vpc-network"
+  environment = terraform.workspace
 }
 
 module "cluster" {
