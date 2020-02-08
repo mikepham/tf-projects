@@ -9,7 +9,14 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  profile = "nativecode"
+  region  = "us-east-1"
+}
+
+module "account" {
+  source     = "./account"
+  domains    = local.domains
+  envdomains = local.envdomains
 }
 
 module "dev" {

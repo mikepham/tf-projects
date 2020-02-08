@@ -29,6 +29,13 @@ locals {
     },
   ]
 
+  envdomains = concat(
+    module.dev.subdomains,
+    module.test.subdomains,
+    module.stage.subdomains,
+    module.prod.subdomains,
+  )
+
   users = [
     {
       import   = true,

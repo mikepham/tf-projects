@@ -12,8 +12,4 @@ locals {
     "AWS_ACCESS_KEY_ID" : module.user.access_key
     "AWS_SECRET_ACCESS_KEY" : module.user.secret_key
   }
-
-  additional_certificate_arns = [
-    "arn:aws:acm:us-east-1:329267330377:certificate/15cb6eaa-4e61-44fb-b7b6-2bdb86b878d4"
-  ]
 }

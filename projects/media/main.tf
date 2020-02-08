@@ -15,7 +15,7 @@ provider "aws" {
 
 module "domain" {
   source = "../../modules/aws/domain"
-  domain = local.domain
+  domain = module.env.domain_name
 }
 
 module "env" {
@@ -48,9 +48,24 @@ module "user" {
   user_name    = local.project_name
 }
 
+module "private_bucket" {
+  source        = "../../modules/aws/bucket"
+  acl           = "private"
+  bucket_name   = "private.${module.env.domain_name}"
+  domain        = module.env.domain_name
+  force_destroy = module.env.not_production
+  project_name  = local.project_name
+
+  principal_arns = [
+    module.user.arn,
+    module.media_services.role_ecs.arn,
+    module.media_services.role_ecs_task.arn,
+  ]
+}
+
 module "loadbalancer" {
   source                      = "../../modules/aws/lb"
-  additional_certificate_arns = local.additional_certificate_arns
+  additional_certificate_arns = []
   certificate_arn             = module.certificate.certificate_id
   domain                      = module.env.domain_name
   project_name                = local.project_name
