@@ -9,7 +9,8 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  profile = "nativecode-${terraform.workspace}"
+  region  = "us-east-1"
 }
 
 module "domain" {
@@ -54,7 +55,7 @@ module "loadbalancer" {
   domain                      = module.env.domain_name
   project_name                = local.project_name
   security_groups             = module.media_services.security_groups
-  subnets                     = module.vpc.public
+  subnets                     = module.vpc.public.*.id
   target_group_arn            = module.media_services.target_group_arns[2]
   vpc_id                      = module.vpc.vpc_id
 
@@ -81,7 +82,7 @@ module "media_services" {
   domain             = module.env.domain_name
   project_name       = local.project_name
   secret_resources   = [module.secrets.arn]
-  subnets            = module.vpc.public
+  subnets            = module.vpc.public.*.id
   vpc_id             = module.vpc.vpc_id
 
   containers = [

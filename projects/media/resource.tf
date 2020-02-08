@@ -1,4 +1,4 @@
-resource "aws_route53_record" "prod-nativecode-net" {
+resource "aws_route53_record" "domain" {
   name    = module.env.domain_name
   type    = "A"
   zone_id = module.domain.zone_id
@@ -10,7 +10,7 @@ resource "aws_route53_record" "prod-nativecode-net" {
   }
 }
 
-resource "aws_route53_record" "star-prod-nativecode-net" {
+resource "aws_route53_record" "domain-wildcard" {
   name    = "*.${module.env.domain_name}"
   type    = "A"
   zone_id = module.domain.zone_id
@@ -22,6 +22,7 @@ resource "aws_route53_record" "star-prod-nativecode-net" {
   }
 }
 
+/*
 resource "aws_route53_record" "jackett" {
   name    = "jackett.${module.env.domain_root}"
   type    = "A"
@@ -57,3 +58,4 @@ resource "aws_route53_record" "phamflix" {
     zone_id                = module.loadbalancer.zone_id
   }
 }
+*/

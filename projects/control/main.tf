@@ -12,21 +12,38 @@ provider "aws" {
   region = "us-east-1"
 }
 
-module "domain" {
-  source = "../../modules/aws/domain"
-  domain = local.domain
+module "dev" {
+  source = "./account-env"
+
+  account_id  = local.root_account
+  domains     = local.domains
+  environment = "dev"
+  users       = local.users
 }
 
-module "env" {
-  source = "../../modules/common/env"
-  domain = local.domain
+module "test" {
+  source = "./account-env"
+
+  account_id  = local.root_account
+  domains     = local.domains
+  environment = "test"
+  users       = local.users
 }
 
-module "certificate" {
-  source           = "../../modules/aws/certificate"
-  domain           = module.env.domain_root
-  cert_domain      = "*.${module.env.domain_root}"
-  cert_domain_alts = [module.env.domain_root]
-  project_name     = local.project_name
-  zone_id          = module.domain.zone_id
+module "stage" {
+  source = "./account-env"
+
+  account_id  = local.root_account
+  domains     = local.domains
+  environment = "stage"
+  users       = local.users
+}
+
+module "prod" {
+  source = "./account-env"
+
+  account_id  = local.root_account
+  domains     = local.domains
+  environment = "prod"
+  users       = local.users
 }

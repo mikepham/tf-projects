@@ -1,9 +1,12 @@
 #!/bin/bash
 
 ACTION=${1:-plan}
-PLANFILE=${2:-terraform.plan}
+WORKSPACE=${2:-${TRAVIS_BRANCH:-"default"}}
+
+PLANFILE="terraform.plan"
 
 terraform init
+terraform workspace select $WORKSPACE
 
 if [ "$ACTION" = "apply" ]; then
   if [ ! -f $PLANFILE ]; then

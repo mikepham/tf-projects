@@ -3,7 +3,7 @@
 #------------------------------------------------------------------------------
 resource "aws_route53_zone" "zones" {
   count   = length(var.domains)
-  comment = "Subdomain of ${element(var.zones.*.name, count.index)} (${element(var.zones.*.zone_id, count.index)})"
+  comment = "Subdomain of ${var.domains[count.index]}"
   name    = "${var.environment}.${element(var.domains, count.index)}"
 }
 

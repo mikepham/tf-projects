@@ -1,5 +1,5 @@
 module "vpc" {
-  source                         = "git::ssh://git@bitbucket.org/plsos2/terraform-modules-aws.git//aws/vpc?ref=v5.5.3"
+  source                         = "../../../modules/aws/vpc"
   environment                    = var.environment
   availability_zones             = ["us-east-1a", "us-east-1b"]
   project_name                   = "infrastructure"

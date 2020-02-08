@@ -42,7 +42,7 @@ resource "aws_lb_target_group" "gitlab" {
   name     = "gitlab"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = local.default_vpc
+  vpc_id   = "vpc-044a446333ccec851"
 
   health_check {
     path = "/-/liveness"
@@ -63,7 +63,7 @@ resource "aws_lb_target_group" "wordpress" {
   name     = "wordpress"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = local.default_vpc
+  vpc_id   = "vpc-044a446333ccec851"
 
   health_check {
     matcher = "200,302"
@@ -88,7 +88,7 @@ module "website" {
   project_name     = local.project_name
   subnets          = ["subnet-061f64ab05defa527", "subnet-0a39e64f6b4f2d11f", "subnet-09972a4049f4674fc"]
   target_group_arn = aws_lb_target_group.wordpress.arn
-  vpc_id           = local.default_vpc
+  vpc_id           = "vpc-044a446333ccec851"
 
   rules = [
     {
