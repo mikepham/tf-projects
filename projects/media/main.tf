@@ -167,7 +167,6 @@ module "media_services" {
   }]
 
   policies = [
-    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     "arn:aws:iam::aws:policy/AmazonS3FullAccess",
     "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
@@ -178,8 +177,8 @@ module "media_services" {
 module "rds" {
   source                     = "../../modules/aws/rds"
   allowed_hosts              = local.allowed_hosts
-  auto_minor_version_upgrade = module.env.not_production
-  backup_retention_period    = module.env.is_production ? 1 : 3
+  auto_minor_version_upgrade = true
+  backup_retention_period    = 1
   backup_window              = "05:00-06:00"
   bucket_arn                 = module.private_bucket.arn
   database_identifier        = local.project_name
@@ -193,11 +192,11 @@ module "rds" {
   instance_class             = "db.t3.micro"
   kms_key_id                 = null
   maintenance_window         = "Sat:02:00-Sat:03:00"
-  multi_az                   = module.env.is_production
+  multi_az                   = false
   parameter_group            = "default.mysql5.7"
   password                   = random_string.database_password.result
   project_name               = local.project_name
-  publicly_accessible        = module.env.not_production
+  publicly_accessible        = true
   security_groups            = module.media_services.security_groups
   skip_final_snapshot        = module.env.not_production
   storage_encrypted          = module.env.is_production
