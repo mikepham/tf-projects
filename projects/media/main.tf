@@ -13,6 +13,12 @@ provider "aws" {
   region  = "us-east-1"
 }
 
+provider "mysql" {
+  endpoint = local.secrets.DB_HOSTNAME
+  username = local.secrets.DB_USERNAME
+  password = local.secrets.DB_PASSWORD
+}
+
 module "domain" {
   source = "../../modules/aws/domain"
   domain = module.env.domain_name
@@ -99,7 +105,7 @@ module "cluster" {
 module "media_services" {
   source             = "../../modules/aws/ecs-service"
   allowed_hosts      = local.allowed_hosts
-  availability_zones = local.availability_zones
+  availability_zones = module.vpc.availability_zones
   cluster_id         = module.cluster.cluster_id
   domain             = module.env.domain_name
   project_name       = local.project_name
