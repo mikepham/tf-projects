@@ -115,7 +115,7 @@ module "media_services" {
 
   containers = [
     {
-      cidr_blocks              = ["0.0.0.0/0"]
+      cidr_blocks              = []
       cpu                      = 512
       definitions              = data.template_file.jackett.rendered
       desired_count            = 1
@@ -130,11 +130,11 @@ module "media_services" {
       port                     = 9117
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
-      security_groups          = []
+      security_groups          = [module.loadbalancer.security_group]
       volumes                  = []
     },
     {
-      cidr_blocks              = ["0.0.0.0/0"]
+      cidr_blocks              = []
       cpu                      = 512
       definitions              = data.template_file.nzbhydra.rendered
       desired_count            = 1
@@ -149,11 +149,11 @@ module "media_services" {
       port                     = 5076
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
-      security_groups          = []
+      security_groups          = [module.loadbalancer.security_group]
       volumes                  = []
     },
     {
-      cidr_blocks              = ["0.0.0.0/0"]
+      cidr_blocks              = []
       cpu                      = 512
       definitions              = data.template_file.phamflix.rendered
       desired_count            = 1
@@ -168,9 +168,10 @@ module "media_services" {
       port                     = 3579
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
-      security_groups          = []
+      security_groups          = [module.loadbalancer.security_group]
       volumes                  = []
-  }]
+    },
+  ]
 
   policies = [
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",

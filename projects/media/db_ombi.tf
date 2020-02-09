@@ -1,13 +1,13 @@
 resource "random_string" "database_password_ombi" {
-  length      = 24
+  length      = 16
   lower       = true
   min_upper   = 1
   min_lower   = 1
   min_numeric = 1
-  min_special = 0
+  min_special = 1
   number      = true
   upper       = true
-  special     = false
+  special     = true
 }
 
 resource "mysql_database" "ombi" {
@@ -21,16 +21,15 @@ resource "mysql_user" "ombi" {
 }
 
 resource "mysql_grant" "admin" {
-  user       = local.secrets.DB_USERNAME
-  host       = local.secrets.DB_HOSTNAME
   database   = mysql_database.ombi.name
+  host       = local.secrets.DB_HOSTNAME
   privileges = ["ALL"]
+  user       = local.secrets.DB_USERNAME
 }
 
 resource "mysql_grant" "ombi" {
-  depends_on = [mysql_user.ombi]
-  user       = mysql_database.ombi.name
-  host       = local.secrets.DB_HOSTNAME
   database   = mysql_database.ombi.name
+  host       = local.secrets.DB_HOSTNAME
   privileges = ["ALL"]
+  user       = mysql_user.ombi.user
 }

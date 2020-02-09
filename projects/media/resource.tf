@@ -33,3 +33,27 @@ resource "aws_route53_record" "domain-wildcard" {
     zone_id                = module.loadbalancer.zone_id
   }
 }
+
+resource "local_file" "database-json" {
+  content  = jsonencode(local.OMBI_DATABASE_JSON)
+  filename = "${path.module}/.output/database.json"
+}
+
+resource "aws_s3_bucket_object" "database-json" {
+  depends_on = [local_file.database-json]
+  bucket     = local.private_bucket_name
+  key        = "/ombi/config/database.json"
+  source     = "${path.module}/.output/database.json"
+}
+
+resource "local_file" "migration-json" {
+  content  = jsonencode(local.OMBI_MIGRATION_JSON)
+  filename = "${path.module}/.output/migration.json"
+}
+
+resource "aws_s3_bucket_object" "migration-json" {
+  depends_on = [local_file.migration-json]
+  bucket     = local.private_bucket_name
+  key        = "/ombi/config/migration.json"
+  source     = "${path.module}/.output/migration.json"
+}

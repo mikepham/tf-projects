@@ -4,20 +4,32 @@ locals {
   private_bucket_name = "private.${module.env.domain_name}"
   project_name        = "media"
 
-  ombi_database_json = {
+  OMBI_DATABASE_JSON = {
     ExternalDatabase = {
-      ConnectionString = "Server=${module.rds.address}; Port=3306; Database=ombi; User=admin; Password=\"${random_string.database_password.result}\""
+      ConnectionString = "Server=${module.rds.address}; Port=3306; Database=${mysql_database.ombi.name}; User=${mysql_user.ombi.user}; Password=\"${random_string.database_password_ombi.result}\""
       Type             = "MySQL"
     }
 
     OmbiDatabase = {
-      ConnectionString = "Server=${module.rds.address}; Port=3306; Database=ombi; User=admin; Password=\"${random_string.database_password.result}\""
+      ConnectionString = "Server=${module.rds.address}; Port=3306; Database=${mysql_database.ombi.name}; User=${mysql_user.ombi.user}; Password=\"${random_string.database_password_ombi.result}\""
       Type             = "MySQL"
     }
 
     SettingsDatabase = {
-      ConnectionString = "Server=${module.rds.address}; Port=3306; Database=ombi; User=admin; Password=\"${random_string.database_password.result}\""
+      ConnectionString = "Server=${module.rds.address}; Port=3306; Database=${mysql_database.ombi.name}; User=${mysql_user.ombi.user}; Password=\"${random_string.database_password_ombi.result}\""
       Type             = "MySQL"
+    }
+  }
+
+  OMBI_MIGRATION_JSON = {
+    OmbiDatabase = {
+      ConnectionString = "Data Source=/config/Ombi.db"
+      Type             = "sqlite"
+    }
+
+    SettingsDatabase = {
+      ConnectionString = "DataSource=/config/OmbiSettings.db"
+      Type             = "sqlite"
     }
   }
 
