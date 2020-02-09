@@ -10,7 +10,7 @@ terraform {
 
 provider "aws" {
   profile = "nativecode-${terraform.workspace}"
-  region  = "us-east-1"
+  region  = local.region
 }
 
 provider "mysql" {
@@ -27,6 +27,13 @@ module "domain" {
 module "env" {
   source = "../../modules/common/env"
   domain = local.domain
+}
+
+module "dns" {
+  source   = "./dns"
+  domain   = module.env.domain_root
+  region   = local.region
+  dns_name = module.loadbalancer.dns_name
 }
 
 module "certificate" {
@@ -71,8 +78,10 @@ module "private_bucket" {
 
   principal_arns = [
     module.user.arn,
-    module.media_services.role_ecs.arn,
-    module.media_services.role_ecs_task.arn,
+    module.indexers.role_ecs.arn,
+    module.indexers.role_ecs_task.arn,
+    module.phamflix.role_ecs.arn,
+    module.phamflix.role_ecs_task.arn,
   ]
 }
 
@@ -82,17 +91,21 @@ module "loadbalancer" {
   certificate_arn             = module.certificate.certificate_id
   domain                      = module.env.domain_name
   project_name                = local.project_name
-  security_groups             = module.media_services.security_groups
+  rules                       = concat(module.indexers.rules, module.phamflix.rules)
+  security_groups             = concat(module.indexers.security_groups, module.phamflix.security_groups)
   subnets                     = module.vpc.public.*.id
-  target_group_arn            = module.media_services.target_group_arns[2]
+  target_group_arn            = local.default_target_group_arn
   vpc_id                      = module.vpc.vpc_id
-
-  rules = module.media_services.rules
 }
 
 module "vpc" {
-  source      = "../../modules/aws/vpc-network"
-  environment = terraform.workspace
+  source                         = "../../modules/aws/vpc"
+  availability_zones             = local.vpc.availability_zones
+  environment                    = terraform.workspace
+  project_name                   = local.project_name
+  vpc_cidr_block                 = local.vpc.cidr_block
+  vpc_cidr_private_block_subnets = local.vpc.private_block_subnets
+  vpc_cidr_public_block_subnets  = local.vpc.public_block_subnets
 }
 
 module "cluster" {
@@ -102,10 +115,10 @@ module "cluster" {
   project_name              = local.project_name
 }
 
-module "media_services" {
+module "indexers" {
   source             = "../../modules/aws/ecs-service"
   allowed_hosts      = local.allowed_hosts
-  availability_zones = module.vpc.availability_zones
+  availability_zones = local.vpc.availability_zones
   cluster_id         = module.cluster.cluster_id
   domain             = module.env.domain_name
   project_name       = local.project_name
@@ -115,28 +128,28 @@ module "media_services" {
 
   containers = [
     {
-      cidr_blocks              = []
-      cpu                      = 512
-      definitions              = data.template_file.jackett.rendered
+      cidr_blocks              = ["0.0.0.0/0"]
+      cpu                      = 256
+      definitions              = data.null_data_source.jackett.outputs["tasks"]
       desired_count            = 1
       dns_name                 = "jackett.${module.env.domain_name}"
       family                   = "jackett"
       health_check_path        = "/UI/Login"
       launch_type              = "FARGATE"
       log_name                 = "jackett"
-      memory                   = 1024
+      memory                   = 512
       name                     = "jackett"
       network_mode             = "awsvpc"
       port                     = 9117
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
-      security_groups          = [module.loadbalancer.security_group]
+      security_groups          = []
       volumes                  = []
     },
     {
-      cidr_blocks              = []
+      cidr_blocks              = ["0.0.0.0/0"]
       cpu                      = 512
-      definitions              = data.template_file.nzbhydra.rendered
+      definitions              = data.null_data_source.nzbhydra.outputs["tasks"]
       desired_count            = 1
       dns_name                 = "nzbhydra.${module.env.domain_name}"
       family                   = "nzbhydra"
@@ -149,32 +162,52 @@ module "media_services" {
       port                     = 5076
       public_ip                = true
       requires_compatibilities = ["FARGATE"]
-      security_groups          = [module.loadbalancer.security_group]
-      volumes                  = []
-    },
-    {
-      cidr_blocks              = []
-      cpu                      = 512
-      definitions              = data.template_file.phamflix.rendered
-      desired_count            = 1
-      dns_name                 = "phamflix.${module.env.domain_name}"
-      family                   = "phamflix"
-      health_check_path        = "/login"
-      launch_type              = "FARGATE"
-      log_name                 = "phamflix"
-      memory                   = 1024
-      name                     = "phamflix"
-      network_mode             = "awsvpc"
-      port                     = 3579
-      public_ip                = true
-      requires_compatibilities = ["FARGATE"]
-      security_groups          = [module.loadbalancer.security_group]
+      security_groups          = []
       volumes                  = []
     },
   ]
 
   policies = [
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+  ]
+}
+
+module "phamflix" {
+  source             = "../../modules/aws/ecs-service"
+  allowed_hosts      = local.allowed_hosts
+  availability_zones = local.vpc.availability_zones
+  cluster_id         = module.cluster.cluster_id
+  domain             = module.env.domain_name
+  project_name       = local.project_name
+  secret_resources   = [module.secrets.arn]
+  subnets            = module.vpc.public.*.id
+  vpc_id             = module.vpc.vpc_id
+
+  containers = [
+    {
+      cidr_blocks              = ["0.0.0.0/0"]
+      cpu                      = 256
+      definitions              = data.null_data_source.ombi.outputs["tasks"]
+      desired_count            = 1
+      dns_name                 = "phamflix.${module.env.domain_name}"
+      family                   = "ombi"
+      health_check_path        = "/login"
+      launch_type              = "FARGATE"
+      log_name                 = "ombi"
+      memory                   = 512
+      name                     = "ombi"
+      network_mode             = "awsvpc"
+      port                     = 3579
+      public_ip                = true
+      requires_compatibilities = ["FARGATE"]
+      security_groups          = []
+      volumes                  = []
+    },
+  ]
+
+  policies = [
     "arn:aws:iam::aws:policy/AmazonS3FullAccess",
     "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
@@ -191,20 +224,19 @@ module "rds" {
   database_identifier        = local.project_name
   database_name              = local.project_name
   db_subnet_group_name       = "db-subnet-group-${terraform.workspace}"
-  disk_size                  = 32
+  disk_size                  = 8
   domain                     = module.env.domain_root
   engine                     = "mysql"
   engine_version             = "5.7.26"
   enable_monitoring          = true
   instance_class             = "db.t3.micro"
-  kms_key_id                 = null
   maintenance_window         = "Sat:02:00-Sat:03:00"
   multi_az                   = false
   parameter_group            = "default.mysql5.7"
   password                   = random_string.database_password.result
   project_name               = local.project_name
   publicly_accessible        = true
-  security_groups            = module.media_services.security_groups
+  security_groups            = concat(module.indexers.security_groups, module.phamflix.security_groups)
   skip_final_snapshot        = module.env.not_production
   storage_encrypted          = module.env.is_production
   vpc_id                     = module.vpc.vpc_id

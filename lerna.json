@@ -1,10 +1,10 @@
 {
   "commands": {
-    "run": {
-      "stream": true
-    },
     "publish": {
       "message": "[skip ci] release"
+    },
+    "run": {
+      "stream": true
     }
   },
   "packages": [

@@ -18,9 +18,9 @@
     "apply": "lerna run apply",
     "build": "lerna run build",
     "commit": "git add -A . && npx git-cz",
-    "prebuild": "jsonsort \"**/(definitions|files)/**/*.json\"",
     "lerna": "lerna",
-    "postinstall": "lerna bootstrap"
+    "postinstall": "lerna bootstrap",
+    "prebuild": "jsonsort package.json"
   },
   "devDependencies": {
     "json-sort-cli": "^1.15.6",

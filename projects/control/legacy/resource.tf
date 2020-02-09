@@ -82,10 +82,10 @@ resource "aws_lb_target_group_attachment" "wordpress" {
 }
 
 module "website" {
-  source           = "../../modules/aws/lb"
+  source           = "../../../modules/aws/lb"
   certificate_arn  = module.certificate.certificate_id
   domain           = module.env.domain_root
-  project_name     = local.project_name
+  project_name     = var.project_name
   subnets          = ["subnet-061f64ab05defa527", "subnet-0a39e64f6b4f2d11f", "subnet-09972a4049f4674fc"]
   target_group_arn = aws_lb_target_group.wordpress.arn
   vpc_id           = "vpc-044a446333ccec851"

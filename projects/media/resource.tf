@@ -40,7 +40,7 @@ resource "local_file" "database-json" {
 }
 
 resource "aws_s3_bucket_object" "database-json" {
-  depends_on = [local_file.database-json]
+  depends_on = [module.private_bucket, local_file.database-json]
   bucket     = local.private_bucket_name
   key        = "/ombi/config/database.json"
   source     = "${path.module}/.output/database.json"
@@ -52,7 +52,7 @@ resource "local_file" "migration-json" {
 }
 
 resource "aws_s3_bucket_object" "migration-json" {
-  depends_on = [local_file.migration-json]
+  depends_on = [module.private_bucket, local_file.migration-json]
   bucket     = local.private_bucket_name
   key        = "/ombi/config/migration.json"
   source     = "${path.module}/.output/migration.json"
